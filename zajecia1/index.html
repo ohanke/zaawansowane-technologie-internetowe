@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+
+    <h1>Task manager</h1>
+
+    <form id="taskForm">
+        <input type="text" id="title" placeholder="input title">
+        <button type="submit">Add Task</button>
+
+    </form>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        const form = document.getElementById("taskForm")
+        const list = document.getElementById("taskList")
+
+        async function loadTasks() {
+            const res = await fetch("/api")
+            const tasks = await res.json()
+
+            list.innerHTML = "";
+
+            tasks.forEach(t => {
+                const li = document.createElement("li");
+                li.textContent = t.title;
+                list.appendChild(li)
+            });
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault()
+            const title = document.getElementById("title").value;
+            console.log(title)
+            await fetch("api", {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({ title })
+            });
+            form.reset();
+            loadTasks();
+        })
+
+    </script>
+
+</body>
+
+</html>
