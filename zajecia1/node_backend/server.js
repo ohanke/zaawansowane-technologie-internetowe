@@ -1,6 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -24,8 +27,8 @@ app.get('/questions', (req, res) => {
 });
 
 app.post('/answers', (req, res) => {
-  const answers = req.body;  // Oczekujemy, że odpowiedzi będą przesyłane w ciele żądania
-  let score = 0; // Upewnij się, że score jest zdefiniowane na początku
+  const answers = req.body;
+  let score = 0;
 
   answers.forEach(answer => {
     const question = questions.find(q => q.id === answer.id);
