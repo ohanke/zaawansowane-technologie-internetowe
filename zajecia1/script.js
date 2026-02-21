@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreSpan = document.getElementById('score');
   const totalSpan = document.getElementById('total');
 
-  // Pobieranie pytań z backendu
   fetch('http://localhost:3000/questions')
     .then(response => response.json())
     .then(questions => {
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-  // Obsługa wysyłania formularza
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -43,21 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const questions = document.querySelectorAll('.question');
     questions.forEach((questionDiv) => {
-      const questionId = questionDiv.querySelector('input').name.split('_')[1]; // Poprawiamy sposób pobierania ID
+      const questionId = questionDiv.querySelector('input').name.split('_')[1];
       const selectedOption = questionDiv.querySelector('input[type="radio"]:checked');
 
       if (selectedOption) {
         answers.push({
-          id: questionId,  // Teraz ID jest poprawnie pobrane
+          id: questionId,
           answer: selectedOption.value
         });
       } else {
-        isValid = false;  // Jeżeli brak odpowiedzi, ustawiamy flagę na false
+        isValid = false;
       }
     });
 
     if (isValid) {
-      console.log("Odpowiedzi do wysłania:", answers);  // Dodajemy log, aby zobaczyć dane przed wysłaniem
+      console.log("Odpowiedzi do wysłania:", answers);
 
       fetch('http://localhost:3000/answers', {
         method: 'POST',
@@ -68,12 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .then(response => response.json())
       .then(data => {
-        console.log("Odpowiedź z serwera:", data);  // Logujemy odpowiedź z serwera
+        console.log("Odpowiedź z serwera:", data);
         scoreSpan.textContent = data.score;
         resultDiv.style.display = 'block';
       })
       .catch(error => {
-        console.error("Błąd wysyłania odpowiedzi:", error);  // Log błędu
+        console.error("Błąd wysyłania odpowiedzi:", error);
       });
     } else {
       alert('Proszę odpowiedzieć na wszystkie pytania.');
