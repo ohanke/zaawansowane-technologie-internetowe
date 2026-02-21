@@ -1,9 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('quizForm');
+
+  if (!form) {
+    console.error('Formularz nie został znaleziony!');
+    return;
+  }
+
   const resultDiv = document.getElementById('result');
   const scoreSpan = document.getElementById('score');
   const totalSpan = document.getElementById('total');
 
+  // Pobieranie pytań z backendu
   fetch('http://localhost:3000/questions')
     .then(response => response.json())
     .then(questions => {
@@ -27,25 +34,31 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+  // Obsługa wysyłania formularza
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const answers = [];
+    let isValid = true;
 
     const questions = document.querySelectorAll('.question');
     questions.forEach((questionDiv) => {
-      const questionId = parseInt(questionDiv.querySelector('label').textContent.split(" ")[0]);
+      const questionId = questionDiv.querySelector('input').name.split('_')[1]; // Poprawiamy sposób pobierania ID
       const selectedOption = questionDiv.querySelector('input[type="radio"]:checked');
 
       if (selectedOption) {
         answers.push({
-          id: questionId,
+          id: questionId,  // Teraz ID jest poprawnie pobrane
           answer: selectedOption.value
         });
+      } else {
+        isValid = false;  // Jeżeli brak odpowiedzi, ustawiamy flagę na false
       }
     });
 
-    if (answers.length === questions.length) {
+    if (isValid) {
+      console.log("Odpowiedzi do wysłania:", answers);  // Dodajemy log, aby zobaczyć dane przed wysłaniem
+
       fetch('http://localhost:3000/answers', {
         method: 'POST',
         headers: {
@@ -55,8 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .then(response => response.json())
       .then(data => {
+        console.log("Odpowiedź z serwera:", data);  // Logujemy odpowiedź z serwera
         scoreSpan.textContent = data.score;
         resultDiv.style.display = 'block';
+      })
+      .catch(error => {
+        console.error("Błąd wysyłania odpowiedzi:", error);  // Log błędu
       });
     } else {
       alert('Proszę odpowiedzieć na wszystkie pytania.');

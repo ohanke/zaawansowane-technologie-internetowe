@@ -27,16 +27,31 @@ app.get('/questions', (req, res) => {
 });
 
 app.post('/answers', (req, res) => {
+  console.log("Odpowiedzi odebrane:", req.body);
+
   const answers = req.body;
   let score = 0;
 
   answers.forEach(answer => {
-    const question = questions.find(q => q.id === answer.id);
-    if (question && question.correctAnswer === answer.answer) {
-      score += 1;
+    const question = questions.find(q => q.id === Number(answer.id));
+
+    if (question) {
+      console.log(`Pytanie: ${question.question} | Odpowiedź użytkownika: ${answer.answer} | Poprawna odpowiedź: ${question.correctAnswer}`);
+
+      const correctAnswer = question.correctAnswer.trim().toLowerCase();
+      const userAnswer = answer.answer.trim().toLowerCase();
+
+      if (correctAnswer === userAnswer) {
+        score += 1;
+      } else {
+        console.log(`Odpowiedź niepoprawna: ${userAnswer} !== ${correctAnswer}`);
+      }
+    } else {
+      console.log(`Brak pytania o ID: ${answer.id}`);
     }
   });
 
+  console.log(`Wynik: ${score} na ${questions.length}`);
   res.json({ score, total: questions.length });
 });
 
