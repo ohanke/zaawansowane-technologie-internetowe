@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <div class="card border-secondary m-3">
+                <div class="card-body">
+                    <h4 class="card-title">My Node Rest Api</h4>
+
+                    <div class="mb-3">
+                        <button id="getAll" type="button" class="btn btn-primary">
+                            Get All users /api/users
+                        </button>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <input type="number" id="getId" class="form-control w-25 m-2" placeholder="enter id">
+                        <button id="getUser" type="button" class="btn btn-primary">
+                            Get All users /api/users/:id
+                        </button>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <input type="text" id="newName" class="form-control w-25 m-2" placeholder="enter name">
+                        <input type="number" id="newAge" class="form-control w-25 m-2" placeholder="enter age">
+                        <button id="createUser" type="button" class="btn btn-secondary">
+                            POST /api/users
+                        </button>
+                    </div>
+
+
+                    <!-- update -->
+                    <hr>
+
+                    <div class="mb-3">
+                        <input type="number" id="patchId" class="form-control w-25 m-2" placeholder="enter id">
+
+                        <input type="text" id="patchName" class="form-control w-25 m-2" placeholder="enter name">
+                        <input type="number" id="patchAge" class="form-control w-25 m-2" placeholder="enter age">
+                        <button id="updateUser" type="button" class="btn btn-warning">
+                            PATCH /api/users/:id
+                        </button>
+                    </div>
+
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <input type="number" id="deleteId" class="form-control w-25 m-2" placeholder="enter id">
+                        <button id="deleteUser" type="button" class="btn btn-danger">
+                            DELETE /api/users/:id
+                        </button>
+                    </div>
+
+
+
+                    <hr>
+                    <h3>Response:</h3>
+                    <pre id="response">
+
+                    </pre>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-1"></div>
+    </div>
+
+
+    <script>
+        const responseEl = document.getElementById('response')
+
+        async function makeRequest(url, options = {}) {
+            try {
+
+                const res = await fetch(url, options)
+                console.log(res, res.ok)
+                const data = await res.json()
+                console.log(data)
+                responseEl.textContent = JSON.stringify(data)
+
+            }
+            catch (err) {
+                console.log("Error: ", err)
+            }
+        }
+
+        document.getElementById('getAll').addEventListener('click', () => {
+            makeRequest('/api/users')
+
+        })
+
+        document.getElementById('getUser').addEventListener('click', () => {
+            const id = document.getElementById('getId').value
+            if (!id) return alert('Enter id')
+            makeRequest(`/api/users/${id}`)
+        })
+
+        document.getElementById('createUser').addEventListener('click', () => {
+            const nameValue = document.getElementById('newName').value
+            const ageValue = document.getElementById('newAge').value
+            makeRequest('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: nameValue, age: Number(ageValue) })
+            })
+        })
+
+        document.getElementById('updateUser').addEventListener('click', () => {
+            const id = document.getElementById('patchId').value
+            const nameValue = document.getElementById('patchName').value
+            const ageValue = document.getElementById('patchAge').value
+
+            const body = {}
+            if (nameValue) body.name = nameValue
+            if (ageValue) body.age = ageValue
+
+            makeRequest(`/api/users/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+        })
+
+
+        document.getElementById('deleteUser').addEventListener('click', () => {
+            const id = document.getElementById('deleteId').value
+            if (!id) return alert('Enter id')
+            makeRequest(`/api/users/${id}`,{method:'DELETE'})
+        })
+
+
+
+    </script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
